@@ -38,6 +38,16 @@
 *SAMPro3D* can segment **ANY** 3D indoor scenes <b><font color="Tomato">WITHOUT</font></b> training. It achieves higher quality and more diverse segmentation than previous zero-shot or fully supervised approaches, and in many cases even surpasses human-level annotations.
 <br>
 
+If you find our code or work helpful, please cite:
+```bibtex
+@article{xu2023sampro3d,
+        title={SAMPro3D: Locating SAM Prompts in 3D for Zero-Shot Scene Segmentation}, 
+        author={Mutian Xu and Xingyilang Yin and Lingteng Qiu and Yang Liu and Xin Tong and Xiaoguang Han},
+        year={2023},
+        journal = {arXiv preprint arXiv:2311.17707}
+  }
+```
+
 <!-- TABLE OF CONTENTS -->
 <details open="open" style='padding: 10px; border-radius:5px 30px 30px 5px; border-style: solid; border-width: 1px;'>
   <summary>Table of Contents</summary>
@@ -55,13 +65,13 @@
       <a href="#run-sampro3d">Run SAMPro3D</a>
     </li>
     <li>
-      <a href="#segment-your-own-3d-scene">Segment your own 3D scene</a>
+      <a href="#animated-qualitative-comparison">Animated Qualitative Comparison</a>
+    </li>
+    <li>
+      <a href="#segment-your-own-3d-scene">Segment Your Own 3D Scene</a>
     </li>
     <li>
       <a href="#todo">TODO</a>
-    </li>
-    <li>
-      <a href="#citation">Citation</a>
     </li>
     <li>
       <a href="#contact">Contact</a>
@@ -109,6 +119,12 @@ python main.py --data_path /PATH_TO/ScanNet_data --scene_name sceneXXXX_XX --pro
 <!-- ### Post-processing to segment the floor perfectly.
  Using our framework, you can usually get a decent segmentation of the floor. However, for a large-scale floor, you need to run post_process.py for perfect segmentation of floors. -->
 
+## Animated Qualitative Comparison
+
+https://github.com/GAP-LAB-CUHK-SZ/SAMPro3D/assets/48080726/3a459c80-ac17-4750-a763-d477d33640bd
+
+https://github.com/GAP-LAB-CUHK-SZ/SAMPro3D/assets/48080726/ac7aaf2c-9223-4d0e-94c4-cf38413eba74
+
 ## :star: Segment Your Own 3D Scene: 
 With our advanced framework, you can generate high-quality segmentations on your own any 3D scene without the need for training! Here are the steps you can follow:
 
@@ -120,24 +136,12 @@ With our advanced framework, you can generate high-quality segmentations on your
 - Refine if necessary: If the segmentation output requires improvement or refinement, consider adjusting the parameters or settings of SAMPro3D or applying post-processing techniques to enhance the segmentation quality.
 - Analyze and utilize the segmentation: Utilize the segmented output for your intended purposes, such as further analysis, visualization, or integration with other applications or systems.
 
-
 ## :triangular_flag_on_post: TODO
 - [ ]  Add the visualization code for showing the result of SAM3D, Mask3D and ScanNet200's annotations.
 - [ ]  Support the jupyter notebook for step-by-step running.
 - [ ]  Add the code for incorporating [HQ-SAM](https://github.com/SysCV/sam-hq) and [Mobile-SAM](https://github.com/ChaoningZhang/MobileSAM) in our pipeline.
 - [ ]  Support in-website qualitative visualization.
 - [ ]  Support more datasets.
-
-## Citation
-If you find our code or work helpful, please cite:
-```bibtex
-@article{xu2023sampro3d,
-        title={SAMPro3D: Locating SAM Prompts in 3D for Zero-Shot Scene Segmentation}, 
-        author={Mutian Xu and Xingyilang Yin and Lingteng Qiu and Yang Liu and Xin Tong and Xiaoguang Han},
-        year={2023},
-        journal = {arXiv preprint arXiv:2311.17707}
-  }
-```
 
 ## Contact
 You are welcome to submit issues, send pull requests or share some ideas with us. If you have any other questions, please contact Mutian Xu (mutianxu@link.cuhk.edu.cn).
