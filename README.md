@@ -38,32 +38,6 @@
 *SAMPro3D* can segment **ANY** 3D indoor scenes <b><font color="Tomato">WITHOUT</font></b> training. It achieves higher quality and more diverse segmentation than previous zero-shot or fully supervised approaches, and in many cases even surpasses human-level annotations.
 <br>
 
-<!-- Video carousel -->
-<section class="hero is-small">
-  <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-        <div class="item item-video1">
-          <center>
-          <video poster="" id="video1" autoplay controls muted loop width="66%">
-            <!-- Your video file here -->
-            <source src="https://mutianxu.github.io/sampro3d/static/videos/comparison_sam3d.mp4"
-            type="video/mp4">
-          </video>
-        </center>
-        </div>
-        <div class="item item-video2">
-          <center>
-          <video poster="" id="video2" autoplay controls muted loop width="66%">
-            <!-- Your video file here -->
-            <source src="https://mutianxu.github.io/sampro3d/static/videos/comparison_mask3d.mp4"
-            type="video/mp4">
-          </video>
-        </center>
-  </div>
-</section>
-<!-- End video carousel -->
-
 <!-- TABLE OF CONTENTS -->
 <details open="open" style='padding: 10px; border-radius:5px 30px 30px 5px; border-style: solid; border-width: 1px;'>
   <summary>Table of Contents</summary>
@@ -72,7 +46,7 @@
       <a href="#-news">News</a>
     </li>
     <li>
-      <a href="#installation">Installation</a>
+      <a href="#requirements-and-installation">Requirements and Installation</a>
     </li>
     <li>
       <a href="#data-preparation">Data Preparation</a>
@@ -99,7 +73,7 @@
 </details>
 
 ## :loudspeaker: News
-- Release code :fire::fire::fire: (12.31, 2023 UTC)
+- Release code. :fire::fire::fire: (12.31, 2023 UTC)
 
 
 ## Requirements and Installation
@@ -148,14 +122,14 @@ With our advanced framework, you can generate high-quality segmentations on your
 
 
 ## :triangular_flag_on_post: TODO
-- [ ]  Add the visualization code for showing the result of SAM3D, Mask3D and ScanNet200's annotations
-- [ ]  Support the jupyter notebook for step-by-step running
-- [ ]  Add the code for incorporating [HQ-SAM](https://github.com/SysCV/sam-hq) and [Mobile-SAM](https://github.com/ChaoningZhang/MobileSAM) in our pipeline
-- [ ]  Support in-website qualitative visualization
-- [ ]  Support more datasets
+- [ ]  Add the visualization code for showing the result of SAM3D, Mask3D and ScanNet200's annotations.
+- [ ]  Support the jupyter notebook for step-by-step running.
+- [ ]  Add the code for incorporating [HQ-SAM](https://github.com/SysCV/sam-hq) and [Mobile-SAM](https://github.com/ChaoningZhang/MobileSAM) in our pipeline.
+- [ ]  Support in-website qualitative visualization.
+- [ ]  Support more datasets.
 
 ## Citation
-If you find our code or work helpful, please cite
+If you find our code or work helpful, please cite:
 ```bibtex
 @article{xu2023sampro3d,
         title={SAMPro3D: Locating SAM Prompts in 3D for Zero-Shot Scene Segmentation}, 
