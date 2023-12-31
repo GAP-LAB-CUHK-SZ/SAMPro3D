@@ -255,7 +255,7 @@ def get_args():
     parser.add_argument('--scene_name', default="scene0030_00", type=str, help='The scene names in ScanNet.')
     parser.add_argument('--prompt_path', default="init_prompt", type=str, help='Path to the pre-sampled 3D initial prompts.')
     parser.add_argument('--sam_output_path', default="sam_output", type=str, help='Path to the previously generated sam segmentation result.')
-    parser.add_argument('--output_ply_folder', default="output_ply", help='Path to save the ply file of the final segmentation result.')
+    parser.add_argument('--output_vis_path', default="output_vis", help='Path to save the visualization file of the final segmentation result.')
     # sam arguments:
     parser.add_argument('--model_type', default="vit_h", type=str, help="The type of model to load, in ['default', 'vit_h', 'vit_l', 'vit_b']")
     parser.add_argument('--sam_checkpoint', default="sam_vit_h_4b8939.pth", type=str, help='The path to the SAM checkpoint to use for mask generation.')
@@ -310,7 +310,7 @@ if __name__ == "__main__":
     print("Start initial 3D segmentation ...")
     pt_score_abs, pt_pred_abs, pt_score_mean = perform_3dsegmentation(xyz, keep_idx, datas_ori_path, points_npy_path, args)
     print("Finished initial 3D segmentation!")
-    
+
     # Prompt Consolidation:
     print("Start Prompt Consolidation and finalizing 3D Segmentation ...")
     pt_pred_final = prompt_consolidation(xyz, pt_score_abs, pt_pred_abs, pt_score_mean)
@@ -318,7 +318,7 @@ if __name__ == "__main__":
 
     # Save and visualize the final result, delete unused imported packages at the begining
     # Create the output folder if it doesn't exist
-    create_folder(args.output_ply_folder)
+    create_folder(args.output_vis_path)
 
     mesh_ori = o3d.io.read_triangle_mesh(scene_plypath)
     cmap = rand_cmap(keep_idx.shape[0], type='bright', first_color_black=False, last_color_black=False, verbose=False)
@@ -329,6 +329,6 @@ if __name__ == "__main__":
     mesh.vertices = mesh_ori.vertices
     mesh.triangles = mesh_ori.triangles
     mesh.vertex_colors = o3d.utility.Vector3dVector(c)
-    output_ply_file = os.path.join(args.output_ply_folder, args.scene_name + '.ply')
-    o3d.io.write_triangle_mesh(output_ply_file, mesh)
+    output_vis_file = os.path.join(args.output_vis_path, args.scene_name + '.ply')
+    o3d.io.write_triangle_mesh(output_vis_file, mesh)
     print("Successfully save the visualization result of final segmentation!")

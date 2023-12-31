@@ -113,8 +113,9 @@ This stage will be the only step to perform SAM inference, accounting for the ma
 ### Finish Segmentation
 Next, we will proceed with filtering and consolidating the initial prompts, leveraging the saved SAM outputs generated during the 3D Prompt Proposal phase, to obtain the final 3D segmentations. This can be realized by executing the following command:
 ```
-python main.py --data_path /PATH_TO/ScanNet_data --scene_name sceneXXXX_XX --prompt_path /PATH_TO/initial_prompt --sam_output_path /PATH_TO/SAM_outputs --device cuda:0
+python main.py --data_path /PATH_TO/ScanNet_data --scene_name sceneXXXX_XX --prompt_path /PATH_TO/initial_prompt --sam_output_path /PATH_TO/SAM_outputs --output_vis_path /PATH_TO/result_visualization --device cuda:0
 ```
+After finishing this, the visualization result of the final 3D segmentation will be saved as `.ply` file in the path specified by `--output_vis_path`.
 
 <!-- ### Post-processing to segment the floor perfectly.
  Using our framework, you can usually get a decent segmentation of the floor. However, for a large-scale floor, you need to run post_process.py for perfect segmentation of floors. -->
