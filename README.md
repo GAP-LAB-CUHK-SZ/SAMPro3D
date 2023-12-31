@@ -35,7 +35,7 @@
   </a>
 </p>
 
-*SAMPro3D* can segment **ANY** 3D indoor scenes <b><font color="Tomato">WITHOUT</font></b> training. It achieves higher quality and more diverse segmentation than previous zero-shot or fully supervised approaches, and in many cases even surpasses human-level annotations.
+*SAMPro3D* can segment **ANY** 3D indoor scenes <b>WITHOUT</b> training. It achieves higher quality and more diverse segmentation than previous zero-shot or fully supervised approaches, and in many cases even surpasses human-level annotations.
 <br>
 
 If you find our code or work helpful, please cite:
