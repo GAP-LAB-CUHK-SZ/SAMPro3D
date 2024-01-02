@@ -83,8 +83,8 @@ If you find our code or work helpful, please cite:
 </details>
 
 ## 📢 News
-- Release code. :fire::fire::fire: (Dec.31, 2023 UTC)
-- The first major revision of code, please use the latest code. 💪💪💪 (Jan.2, 2024 UTC)
+- The initial code is released. :fire::fire::fire: (Dec.31, 2023 UTC)
+- The first major revision of code is out, please use the latest code. 💪💪💪 (Jan.2, 2024 UTC)
 
 
 ## Requirements and Installation
