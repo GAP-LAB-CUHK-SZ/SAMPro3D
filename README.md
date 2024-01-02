@@ -82,9 +82,9 @@ If you find our code or work helpful, please cite:
   </ol>
 </details>
 
-## :loudspeaker: News
-- Release code. :fire::fire::fire: (12.31, 2023 UTC)
-- The first major revision of code, please use the latest one! :fire::fire::fire: (12.31, 2023 UTC)
+## 📢 News
+- Release code. :fire::fire::fire: (Dec.31, 2023 UTC)
+- The first major revision of code, please use the latest one! (Jan.2, 2024 UTC)
 
 
 ## Requirements and Installation
@@ -122,13 +122,16 @@ After finishing this, the visualization result of the final 3D segmentation will
 <!-- ### Post-processing to segment the floor perfectly.
  Using our framework, you can usually get a decent segmentation of the floor. However, for a large-scale floor, you need to run post_process.py for perfect segmentation of floors. -->
 
+### Speed Estimation⚡️
+If everything goes well, the entire pipeline will just take 15 min for a large-scale 3D scene captured by 2000 2D frames. (**WE DO NOT NEED TRAIN!!!**)
+
 ## Animated Qualitative Comparison
 
 https://github.com/GAP-LAB-CUHK-SZ/SAMPro3D/assets/48080726/3a459c80-ac17-4750-a763-d477d33640bd
 
 https://github.com/GAP-LAB-CUHK-SZ/SAMPro3D/assets/48080726/ac7aaf2c-9223-4d0e-94c4-cf38413eba74
 
-## :star: Segment Your Own 3D Scene: 
+## 🌟 Segment Your Own 3D Scene: 
 With our advanced framework, you can generate high-quality segmentations on your own 3D scene without the need for training! Here are the steps you can follow:
 
 - Data preparation: Follow the tips mentioned in [data pre-processing instruction](dataset_preprocess/README.md) to prepare your data.
@@ -139,7 +142,7 @@ With our advanced framework, you can generate high-quality segmentations on your
 - Refine if necessary: If the segmentation output requires improvement or refinement, consider adjusting the parameters or settings of SAMPro3D or applying post-processing techniques to enhance the segmentation quality.
 - Analyze and utilize the segmentation: Utilize the segmented output for your intended purposes, such as further analysis, visualization, or integration with other applications or systems.
 
-## :triangular_flag_on_post: TODO
+## 🚩 TODO
 - [ ]  Add the visualization code for showing the result of SAM3D, Mask3D and ScanNet200's annotations.
 - [ ]  Support the jupyter notebook for step-by-step running.
 - [ ]  Add the code for incorporating [HQ-SAM](https://github.com/SysCV/sam-hq) and [Mobile-SAM](https://github.com/ChaoningZhang/MobileSAM) in our pipeline.
