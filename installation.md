@@ -13,7 +13,7 @@ You can create an anaconda environment called `sampro3d` as below. For linux, yo
 
 ```bash
 sudo apt-get install libopenexr-dev # for linux
-conda create -n sampro3d python=3.11 (recommended python version >= 3.10)
+conda create -n sampro3d python=3.8 (recommended python version >= 3.8)
 conda activate sampro3d
 ```
 
