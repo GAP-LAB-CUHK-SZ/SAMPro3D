@@ -35,7 +35,7 @@
   </a>
 </p>
 
-*SAMPro3D* can segment **ANY** 3D indoor scenes <b>WITHOUT</b> training. It achieves higher quality and more diverse segmentation than previous zero-shot or fully supervised approaches, and in many cases even surpasses human-level annotations.
+*SAMPro3D* can segment **ANY** 😯😯😯 3D indoor scenes <b>WITHOUT</b> training. ❗️❗️❗️ It achieves higher quality and more diverse segmentation than previous zero-shot or fully supervised approaches, and in many cases even surpasses human-level annotations.
 <br>
 
 If you find our code or work helpful, please cite:
@@ -84,7 +84,7 @@ If you find our code or work helpful, please cite:
 
 ## 📢 News
 - Release code. :fire::fire::fire: (Dec.31, 2023 UTC)
-- The first major revision of code, please use the latest one! (Jan.2, 2024 UTC)
+- The first major revision of code, please use the latest code. 💪💪💪 (Jan.2, 2024 UTC)
 
 
 ## Requirements and Installation
@@ -123,7 +123,7 @@ After finishing this, the visualization result of the final 3D segmentation will
  Using our framework, you can usually get a decent segmentation of the floor. However, for a large-scale floor, you need to run post_process.py for perfect segmentation of floors. -->
 
 ### Time estimation ⚡️
-If everything goes well, the entire pipeline will just take 15 min for a large-scale 3D scene captured by 2000 2D frames. (**WE DO NOT NEED TRAIN!!!**)
+If everything goes well, the entire pipeline will just take 15 min for a large-scale 3D scene captured by 2000 2D frames. (**WE DO NOT NEED TRAIN❗️**)
 
 ## Animated Qualitative Comparison
 
