@@ -106,10 +106,11 @@ The initial stage of SAMPro3D involves generating a 3D prompt and executing SAM 
 ```
 python 3d_prompt_proposal.py --data_path /PATH_TO/ScanNet_data --scene_name sceneXXXX_XX --prompt_path /PATH_TO/initial_prompt --sam_output_path /PATH_TO/SAM_outputs --device cuda:0
 ```
-
 This stage will be the only step to perform SAM inference, accounting for the majority of computational time and memory usage within our entire pipeline.
 
 **Note**: This stage will save SAM outputs into `.npy` files for later use. Due to different hardware conditions (CPU and disk), the I/O speed of SAM output files may vary a lot and impact the running time of our pipeline. Please refer to the hardware recommendations mentioned before to prepare your hardware for the best efficiency.
+
+(Optional: *Partial-Area* Segmentation): At this stage, you can also perform 3D segmentation on partial point clouds captured by limited 2D frames, by simply changing the `frame_id_init` and `frame_id_end` at [here](https://github.com/GAP-LAB-CUHK-SZ/SAMPro3D/blob/main/3d_prompt_proposal.py#L169), then running the script. Sometimes this works better than segmenting the whole point clouds (thanks to less complicated scenes and better frame-consistency).
 
 ### Finish Segmentation
 Next, we will proceed with filtering and consolidating the initial prompts, leveraging the saved SAM outputs generated during the 3D Prompt Proposal phase, to obtain the final 3D segmentations. This can be realized by executing the following command:
@@ -120,9 +121,6 @@ After finishing this, the visualization result of the final 3D segmentation will
 
 <!-- ### Post-processing to segment the floor perfectly.
  Using our framework, you can usually get a decent segmentation of the floor. However, for a large-scale floor, you need to run post_process.py for perfect segmentation of floors. -->
-
-### Partial-Area Segmentation
-You can also perform 3D segmentation on partial point clouds captured by limited 2D frames, by simply changing the `frame_id_init` and `frame_id_end` at [here](https://github.com/GAP-LAB-CUHK-SZ/SAMPro3D/blob/main/3d_prompt_proposal.py#L169). Sometimes this works better than segmenting the whole point clouds (thanks to less complicated scenes and better frame-consistency).
 
 ## Animated Qualitative Comparison
 
