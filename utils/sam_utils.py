@@ -4,7 +4,7 @@ import torch
 
 from itertools import product
 from copy import deepcopy
-from typing import Any, Dict, ItemsView, List, Tuple
+from typing import Any, Dict, Generator, ItemsView, List, Tuple
 
 """
 # SAM functions, from https://github.com/facebookresearch/segment-anything

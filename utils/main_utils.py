@@ -78,13 +78,15 @@ def transform_pt_depth_scannet_torch(points, depth_intrinsic, depth, pose, devic
     return p, keep_idx
 
 
-def compute_mapping(points, data_path, scene_name, frame_id, vis_thres, depth_shift):  
+def compute_mapping(points, data_path, scene_name, frame_id):  
     """
     :param points: N x 3 format
     :param depth: H x W format
     :param intrinsic: 3x3 format
     :return: mapping, N x 3 format, (H,W,mask)
     """
+    vis_thres = 0.1
+    depth_shift = 1000.0
 
     mapping = np.zeros((3, points.shape[0]), dtype=int)
     

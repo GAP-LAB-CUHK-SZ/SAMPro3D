@@ -23,11 +23,13 @@ from tqdm import trange
 def create_output_folders(args):
     # Create folder to save SAM outputs:
     create_folder(args.sam_output_path)
+    # Create folder to save SAM outputs for a specific scene:
+    create_folder(os.path.join(args.sam_output_path, args.scene_name))
     # Create subfolder for saving different output types:
-    create_folder(os.path.join(args.sam_output_path, 'points_npy'))
-    create_folder(os.path.join(args.sam_output_path, 'iou_preds_npy'))
-    create_folder(os.path.join(args.sam_output_path, 'masks_npy'))
-    create_folder(os.path.join(args.sam_output_path, 'corre_3d_ins_npy'))
+    create_folder(os.path.join(args.sam_output_path, args.scene_name, 'points_npy'))
+    create_folder(os.path.join(args.sam_output_path, args.scene_name, 'iou_preds_npy'))
+    create_folder(os.path.join(args.sam_output_path, args.scene_name, 'masks_npy'))
+    create_folder(os.path.join(args.sam_output_path, args.scene_name, 'corre_3d_ins_npy'))
 
 
 def prompt_init(xyz, rgb, voxel_size, device):
@@ -118,19 +120,19 @@ def sam_seg(predictor, frame_id_init, frame_id_end, init_prompt, args):
         data_original.to_numpy()
 
         save_file_name = str(frame_id) + ".npy"
-        np.save(os.path.join(args.sam_output_path, "points_npy", save_file_name), data_original["points"])
-        np.save(os.path.join(args.sam_output_path, "masks_npy", save_file_name), data_original["masks"])  
-        np.save(os.path.join(args.sam_output_path, "iou_preds_npy", save_file_name), data_original["iou_preds"])  
-        np.save(os.path.join(args.sam_output_path, "corre_3d_ins_npy", save_file_name), data_original["corre_3d_ins"])
+        np.save(os.path.join(args.sam_output_path, args.scene_name, "points_npy", save_file_name), data_original["points"])
+        np.save(os.path.join(args.sam_output_path, args.scene_name, "masks_npy", save_file_name), data_original["masks"])  
+        np.save(os.path.join(args.sam_output_path, args.scene_name, "iou_preds_npy", save_file_name), data_original["iou_preds"])  
+        np.save(os.path.join(args.sam_output_path, args.scene_name, "corre_3d_ins_npy", save_file_name), data_original["corre_3d_ins"])
 
 
 def get_args():
     parser = argparse.ArgumentParser(
         description="Generate 3d prompt proposal on ScanNet.")
     # for voxelization to decide the number of fps-sampled points:
-    parser.add_argument('--voxel_size', type=float, default=0.2, help='Size of voxels.')
+    parser.add_argument('--voxel_size', default=0.2, type=float, help='Size of voxels.')
     # path arguments:
-    parser.add_argument('--data_path', default="dataset/scannet", help='Path to the dataset containing ScanNet 2d frames and 3d .ply files.')
+    parser.add_argument('--data_path', default="dataset/scannet", type=str, help='Path to the dataset containing ScanNet 2d frames and 3d .ply files.')
     parser.add_argument('--scene_name', default="scene0030_00", type=str, help='The scene names in ScanNet.')
     parser.add_argument('--prompt_path', default="init_prompt", type=str, help='Path to the save the sampled 3D initial prompts.')
     parser.add_argument('--sam_output_path', default="sam_output", type=str, help='Path to save the sam segmentation result.')
@@ -165,7 +167,8 @@ if __name__ == "__main__":
     create_output_folders(args)  # we use npy files to save different output types for faster i/o and clear split
     # perform SAM on each 2D RGB frame:
     frame_id_init = 0
-    frame_id_end = len(os.listdir(os.path.join(args.data_path, args.scene_name, 'depth')))
-    print("Start performing SAM segmentations ...")
+    frame_id_end = len(os.listdir(os.path.join(args.data_path, args.scene_name, 'depth'))) 
+    # You can define frame_id_init and frame_id_end by yourself for segmenting partial point clouds from limited frames. Sometimes partial result is better!
+    print("Start performing SAM segmentations on {} 2D frames...".format(frame_id_end))
     sam_seg(predictor, frame_id_init, frame_id_end, init_prompt, args)
     print("Finished performing SAM segmentations!")

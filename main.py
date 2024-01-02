@@ -23,7 +23,7 @@ from segment_anything import sam_model_registry, SamPredictor
 
 
 # 2D-Guided Prompt Filter:
-def prompt_filter(init_prompt, datas_ori_path, npy_path, predictor, args):
+def prompt_filter(init_prompt, scene_output_path, npy_path, predictor, args):
     device = torch.device(args.device)
     # gap = 1  # number of skipped frames
     stop_limit = 10  # we find that not considering all frames for filter is better
@@ -37,10 +37,10 @@ def prompt_filter(init_prompt, datas_ori_path, npy_path, predictor, args):
         #     continue
 
         # load the corresponding SAM segmentations data of the corresponding frame:
-        points_data = torch.from_numpy(np.load(os.path.join(datas_ori_path, 'points_npy', npy_file))).to(device)
-        iou_preds_data = torch.from_numpy(np.load(os.path.join(datas_ori_path, 'iou_preds_npy', npy_file))).to(device)
-        masks_data = torch.from_numpy(np.load(os.path.join(datas_ori_path, 'masks_npy', npy_file))).to(device)
-        corre_3d_ins_data = torch.from_numpy(np.load(os.path.join(datas_ori_path, 'corre_3d_ins_npy', npy_file))).to(device)  # the valid (i.e., has mapped pixels at the current frame) prompt ID  in the original 3D point cloud of initial prompts
+        points_data = torch.from_numpy(np.load(os.path.join(scene_output_path, 'points_npy', npy_file))).to(device)
+        iou_preds_data = torch.from_numpy(np.load(os.path.join(scene_output_path, 'iou_preds_npy', npy_file))).to(device)
+        masks_data = torch.from_numpy(np.load(os.path.join(scene_output_path, 'masks_npy', npy_file))).to(device)
+        corre_3d_ins_data = torch.from_numpy(np.load(os.path.join(scene_output_path, 'corre_3d_ins_npy', npy_file))).to(device)  # the valid (i.e., has mapped pixels at the current frame) prompt ID  in the original 3D point cloud of initial prompts
         data = MaskData(
                 masks=masks_data,
                 iou_preds=iou_preds_data,
@@ -56,7 +56,7 @@ def prompt_filter(init_prompt, datas_ori_path, npy_path, predictor, args):
         ############ start filter:
         # Filter by predicted IoU
         if args.pred_iou_thres > 0.0:
-            keep_mask = data["iou_preds"] > args.pred_iou_thresh
+            keep_mask = data["iou_preds"] > args.pred_iou_thres
             data.filter(keep_mask)
         #     print(data['points'].shape)
         
@@ -65,8 +65,8 @@ def prompt_filter(init_prompt, datas_ori_path, npy_path, predictor, args):
             masks=data["masks"], mask_threshold=predictor.model.mask_threshold, threshold_offset=1.0
         )
 
-        if args.stability_score_thresh > 0.0:
-            keep_mask = data["stability_score"] >= args.stability_score_thresh
+        if args.stability_score_thres > 0.0:
+            keep_mask = data["stability_score"] >= args.stability_score_thres
             data.filter(keep_mask)
     #     print(data['points'].shape)
         
@@ -81,7 +81,7 @@ def prompt_filter(init_prompt, datas_ori_path, npy_path, predictor, args):
             data["boxes"].float(),
             data["iou_preds"],
             torch.zeros_like(data["boxes"][:, 0]),  # categories
-            iou_threshold=args.box_nms_thresh,
+            iou_threshold=args.box_nms_thres,
         )
         data.filter(keep_by_nms)
 
@@ -106,7 +106,7 @@ def prompt_filter(init_prompt, datas_ori_path, npy_path, predictor, args):
     return keep_idx
 
 
-def perform_3dsegmentation(xyz, keep_idx, datas_ori_path, npy_path, args):
+def perform_3dsegmentation(xyz, keep_idx, scene_output_path, npy_path, args):
     device = torch.device(args.device)
     # gap = 1  # number of skipped frames
     n_points = xyz.shape[0]
@@ -119,17 +119,17 @@ def perform_3dsegmentation(xyz, keep_idx, datas_ori_path, npy_path, args):
         #     continue
 
         # load the corresponding SAM segmentations data of the corresponding frame:
-        points_data = torch.from_numpy(np.load(os.path.join(datas_ori_path, 'points_npy', npy_file))).to(device)
-        iou_preds_data = torch.from_numpy(np.load(os.path.join(datas_ori_path, 'iou_preds_npy', npy_file))).to(device)
-        masks_data = torch.from_numpy(np.load(os.path.join(datas_ori_path, 'masks_npy', npy_file))).to(device)
-        corre_3d_ins_data = torch.from_numpy(np.load(os.path.join(datas_ori_path, 'corre_3d_ins_npy', npy_file))).to(device)  # the valid (i.e., has mapped pixels at the current frame) prompt ID  in the original 3D point cloud of initial prompts
+        points_data = torch.from_numpy(np.load(os.path.join(scene_output_path, 'points_npy', npy_file))).to(device)
+        iou_preds_data = torch.from_numpy(np.load(os.path.join(scene_output_path, 'iou_preds_npy', npy_file))).to(device)
+        masks_data = torch.from_numpy(np.load(os.path.join(scene_output_path, 'masks_npy', npy_file))).to(device)
+        corre_3d_ins_data = torch.from_numpy(np.load(os.path.join(scene_output_path, 'corre_3d_ins_npy', npy_file))).to(device)  # the valid (i.e., has mapped pixels at the current frame) prompt ID  in the original 3D point cloud of initial prompts
         data = MaskData(
                 masks=masks_data,
                 iou_preds=iou_preds_data,
                 points=points_data, 
                 corre_3d_ins=corre_3d_ins_data)
 
-        frame_id = npy_path[:-4]
+        frame_id = npy_file[:-4]
 
         # calculate the 3d-2d mapping on ALL input points (not just prompt)
         mapping = compute_mapping(xyz, args.data_path, args.scene_name, frame_id)
@@ -170,11 +170,10 @@ def perform_3dsegmentation(xyz, keep_idx, datas_ori_path, npy_path, args):
 
     pt_score_cpu = pt_score.cpu().numpy()
     counter_final_cpu = counter_final.cpu().numpy()
-    pt_counter_div = counter_final_cpu.copy()
-    pt_counter_div[np.where(pt_counter_div==0)] = -1  # avoid divided by zero
+    counter_final_cpu[np.where(counter_final_cpu==0)] = -1  # avoid divided by zero
 
-    pt_score_mean = pt_score / pt_counter_div  # mean score denotes the probability of a point assigned to a specified prompt ID, and is only used for later thresholding
-    pt_score_abs = pt_score
+    pt_score_mean = pt_score_cpu / counter_final_cpu  # mean score denotes the probability of a point assigned to a specified prompt ID, and is only used for later thresholding
+    pt_score_abs = pt_score_cpu
     max_score = np.max(pt_score_mean, axis=-1)  # the actual scores that has been segmented into one instance
     max_score_abs = np.max(pt_score_abs, axis=-1)
 
@@ -209,7 +208,7 @@ def prompt_consolidation(xyz, pt_score_abs, pt_pred_abs, pt_score_mean):
     # that are isolated in 3D space. (This aims to refine the SAM results)
     pt_score_merge = isolate_on_score(xyz, pt_score_mean_ori, pt_score_merge_ori)
 
-    # only regard "confident" (label probability > 0.5) points as valid points for consolidation:
+    # only regard "confident" (label probability > 0.5) points as valid points belonging to an instance (or prompt) for consolidation:
     valid_thres = 0.5
     ins_areas = []
     ins_ids = []
@@ -234,14 +233,14 @@ def prompt_consolidation(xyz, pt_score_abs, pt_pred_abs, pt_score_mean):
                 inter_ins.append(ins_ids[j])
             inter_all.append(inter_ins)
 
-        consolidated_list = merge_common_values(inter_all)  # consolidate all prompts (i, j, k, ...) that are segmenting the same 3D object
-        print("number of instances after Prompt Consolidation", len(consolidated_list))
+    consolidated_list = merge_common_values(inter_all)  # consolidate all prompts (i, j, k, ...) that are segmenting the same 3D object
+    print("number of instances after Prompt Consolidation", len(consolidated_list))
         
-        # Consolidate the result:
-        for sublist in consolidated_list:
-            for consolidate_id in sublist:
-                mask = np.isin(pt_pred_final, sublist)
-                pt_pred_final[mask] = sublist[0]  # regard the first prompt id as the pseudo prompt id
+    # Consolidate the result:
+    for sublist in consolidated_list:
+        for consolidate_id in sublist:
+            mask = np.isin(pt_pred_final, sublist)
+            pt_pred_final[mask] = sublist[0]  # regard the first prompt id as the pseudo prompt id
 
     return pt_pred_final
 
@@ -251,11 +250,11 @@ def get_args():
 
     parser = argparse.ArgumentParser()
     # path arguments:
-    parser.add_argument('--data_path', default="dataset/scannet", help='Path to the dataset containing ScanNet 2d frames and 3d .ply files.')
+    parser.add_argument('--data_path', default="dataset/scannet", type=str, help='Path to the dataset containing ScanNet 2d frames and 3d .ply files.')
     parser.add_argument('--scene_name', default="scene0030_00", type=str, help='The scene names in ScanNet.')
     parser.add_argument('--prompt_path', default="init_prompt", type=str, help='Path to the pre-sampled 3D initial prompts.')
     parser.add_argument('--sam_output_path', default="sam_output", type=str, help='Path to the previously generated sam segmentation result.')
-    parser.add_argument('--output_vis_path', default="output_vis", help='Path to save the visualization file of the final segmentation result.')
+    parser.add_argument('--output_vis_path', default="output_vis", type=str, help='Path to save the visualization file of the final segmentation result.')
     # sam arguments:
     parser.add_argument('--model_type', default="vit_h", type=str, help="The type of model to load, in ['default', 'vit_h', 'vit_l', 'vit_b']")
     parser.add_argument('--sam_checkpoint', default="sam_vit_h_4b8939.pth", type=str, help='The path to the SAM checkpoint to use for mask generation.')
@@ -284,7 +283,7 @@ if __name__ == "__main__":
     print("Start loading SAM segmentations and other meta data ...")
     # Load the initial 3D input prompts (i.e., fps-sampled input points):
     prompt_ply_file = os.path.join(args.prompt_path, args.scene_name + '.ply')
-    init_prompt = load_ply(prompt_ply_file)
+    init_prompt, _ = load_ply(prompt_ply_file)
     print("the number of initial prompts", init_prompt.shape[0])
 
     # Load all 3D points of the input scene:
@@ -292,30 +291,35 @@ if __name__ == "__main__":
     xyz, rgb = load_ply(scene_plypath)
 
     # Load SAM segmentations generated by previous 3D Prompt Proposal: 
-    datas_ori_path = os.path.join(args.sam_result_path, args.scene_name, "npy_fps_1pointnotpixel_voxel_size0.2/sam_point2image_results")  # TODO: change name here according to Yilang's code
-    points_npy_path = natsorted(os.listdir(os.path.join(datas_ori_path, 'points_npy')))
-    iou_preds_npy_path = natsorted(os.listdir(os.path.join(datas_ori_path, 'iou_preds_npy')))
-    masks_npy_path = natsorted(os.listdir(os.path.join(datas_ori_path, 'masks_npy')))
-    corre_3d_ins_npy_path = natsorted(os.listdir(os.path.join(datas_ori_path, 'corre_3d_ins_npy')))
+    scene_output_path = os.path.join(args.sam_output_path, args.scene_name)
+    points_npy_path = natsorted(os.listdir(os.path.join(scene_output_path, 'points_npy')))
+    iou_preds_npy_path = natsorted(os.listdir(os.path.join(scene_output_path, 'iou_preds_npy')))
+    masks_npy_path = natsorted(os.listdir(os.path.join(scene_output_path, 'masks_npy')))
+    corre_3d_ins_npy_path = natsorted(os.listdir(os.path.join(scene_output_path, 'corre_3d_ins_npy')))
     assert(points_npy_path == iou_preds_npy_path == masks_npy_path == corre_3d_ins_npy_path)
     print("Finished loading SAM segmentations and other meta data!")
+    print("********************************************************")
 
     # 2D-Guided Prompt Filter:
     print("Start 2D-Guided Prompt Filter ...")
-    keep_idx = prompt_filter(init_prompt, datas_ori_path, points_npy_path, predictor, args)
+    keep_idx = prompt_filter(init_prompt, scene_output_path, points_npy_path, predictor, args)
     # pt_filtered = pt_init[keep_idx.clone().cpu().numpy()]
     print("Finished 2D-Guided Prompt Filter!")
+    print("********************************************************")
 
     # Now we need to perform 3D segmentation to get the initial segmentation label and per-point segmentation score, aimming to check if they are segmenting the same 3D object:
     print("Start initial 3D segmentation ...")
-    pt_score_abs, pt_pred_abs, pt_score_mean = perform_3dsegmentation(xyz, keep_idx, datas_ori_path, points_npy_path, args)
+    pt_score_abs, pt_pred_abs, pt_score_mean = perform_3dsegmentation(xyz, keep_idx, scene_output_path, points_npy_path, args)
     print("Finished initial 3D segmentation!")
+    print("********************************************************")
 
     # Prompt Consolidation:
     print("Start Prompt Consolidation and finalizing 3D Segmentation ...")
     pt_pred_final = prompt_consolidation(xyz, pt_score_abs, pt_pred_abs, pt_score_mean)
-    print("Finished Prompt Consolidation and finalizing 3D Segmentation!")
+    print("Finished the entire pipeline!")
+    print("********************************************************")
 
+    print("Creating the visualization result ...")
     # Save and visualize the final result, delete unused imported packages at the begining
     # Create the output folder if it doesn't exist
     create_folder(args.output_vis_path)
