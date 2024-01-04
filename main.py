@@ -368,7 +368,7 @@ if __name__ == "__main__":
         floor_id = int(pt_pred.max()) + 1
         # Merge instances that have large overlap with the floor_proposal
         pt_pred = merge_floor(pt_pred, floor_proposal_ids, floor_id, args.scene_inter_thres)
-        # Run RANSAC to finally refine the previous plane segmentation if there are still some actual floor areas does not segmented as floor
+        # Run RANSAC to finally refine the previous plane segmentation if there are still some actual floor areas does not segmented as floor (this can usually be skipped)
         pt_pred = ransac_plane_seg(scene_plypath, pt_pred, floor_id, args.scene_dist_thres)
         print("Finished post-processing the floor!")
         print("********************************************************")
