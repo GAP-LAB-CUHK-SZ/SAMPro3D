@@ -108,7 +108,7 @@ python 3d_prompt_proposal.py --data_path /PATH_TO/ScanNet_data --scene_name scen
 ```
 This stage will be the only step to perform SAM inference, accounting for the majority of computational time and memory usage within our entire pipeline.
 
-**Note**: This stage will save SAM outputs into `.npy` files for later use. Due to different hardware conditions (CPU and disk), the I/O speed of SAM output files may vary a lot and impact the running time of our pipeline. Please refer to the hardware recommendations mentioned before to prepare your hardware for the best efficiency.
+**Note** on time efficiency: This stage will save SAM outputs into `.npy` files for later use. Due to different hardware conditions (CPU and disk), the I/O speed of SAM output files may vary a lot and impact the running time of our pipeline. Please refer to the hardware recommendations mentioned before to prepare your hardware for the best efficiency.
 
 (Optional: *Partial-Area* Segmentation): At this stage, you can also perform 3D segmentation on partial point clouds captured by limited 2D frames, by simply changing the `frame_id_init` and `frame_id_end` at [here](https://github.com/GAP-LAB-CUHK-SZ/SAMPro3D/blob/main/3d_prompt_proposal.py#L169), then running the script. Sometimes this works better than segmenting the whole point clouds (thanks to less complicated scenes and better frame-consistency).
 
@@ -119,7 +119,7 @@ python main.py --data_path /PATH_TO/ScanNet_data --scene_name sceneXXXX_XX --pro
 ```
 After finishing this, the visualization result of the final 3D segmentation will be *automatically* 😊 saved as `.ply` file in the path specified by `--output_vis_path`.
 
-**Note**: Using our framework, you can usually get a decent segmentation of the floor. However, for a large-scale floor, we use the post-processing for for perfect segmentation of the floor. For small-scale scene (e.g., scene0050_00 in ScanNet), you can skip this step by simply adding `--args.post_floor False` to the previous command.
+**Note** on post-processing of the floor: Using our framework, you can usually get a decent segmentation of the floor. However, for a large-scale floor, we use post-processing for perfect segmentation of the floor. For small-scale scenes (e.g., scene0050_00 in ScanNet), you can skip this step by simply adding `--args.post_floor False` to the previous command.
 
 ### Time estimation ⚡️
 If everything goes well, the entire pipeline will just take 15 min for a large-scale 3D scene captured by 2000 2D frames. (**WE DO NOT NEED TRAIN❗️**)
