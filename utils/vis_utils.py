@@ -46,19 +46,6 @@ def show_box(box, ax):
     w, h = box[2] - box[0], box[3] - box[1]
     ax.add_patch(plt.Rectangle((x0, y0), w, h, edgecolor='green', facecolor=(0,0,0,0), lw=2))
     
-def show_masks(masks, scores, input_point, input_box=None):
-    plt.figure(figsize=(15,3))
-    for i, (mask, score) in enumerate(zip(masks, scores)):
-    #     plt.figure(figsize=(10,10))
-        plt.subplot(1, 3, i+1)
-        plt.imshow(image)
-        show_mask(mask, plt.gca())
-        show_points(input_point, input_label, plt.gca())
-#         show_box(input_box, plt.gca())
-        plt.title(f"Mask {i+1}, Score: {score:.5f}", fontsize=10)
-        plt.axis('off')
-    plt.show()
-    
 def show_anns(anns):
     if len(anns) == 0:
         return
@@ -228,7 +215,8 @@ def write_ply_color_rgb(points, labels, rgb, out_filename, n_classes):
     np.random.seed(1)
     colors = rand_cmap(n_classes, type='bright', first_color_black=False, last_color_black=False, verbose=False)
 
-    ignore_idx_list = np.where(labels==-100)[0] # list of ignore_idx
+    ignore_idx_list = np.where(labels==-1)[0] # list of ignore_idx
+
     for i in range(N):
         if i in ignore_idx_list:  # if ignore_idx, using original rgb value
             c = rgb[i]  
@@ -242,9 +230,8 @@ def write_ply_color_rgb(points, labels, rgb, out_filename, n_classes):
 def get_color_rgb(points, labels, rgb, cmap):
     labels = labels.astype(int)
     N = points.shape[0]
-
     colors = cmap
-    ignore_idx_list = np.where(labels==-100)[0] # list of ignore_idx
+    ignore_idx_list = np.where(labels==-1)[0] # list of ignore_idx
     
     c_all = []
     for i in range(N):

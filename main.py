@@ -185,13 +185,13 @@ def perform_3dsegmentation(xyz, keep_idx, scene_output_path, npy_path, args):
 
     pt_pred_abs = np.argmax(pt_score_abs, axis=-1)
 
-    low_pt_idx_mean = np.where(max_score <= 0.)[0]  # assign ins_label=-100 (unlabelled) if its score=0 (i.e., no 2D mask assigned)
+    low_pt_idx_mean = np.where(max_score <= 0.)[0]  # assign ins_label=-1 (unlabelled) if its score=0 (i.e., no 2D mask assigned)
     pt_score_mean[low_pt_idx_mean] = 0.
-    pt_pred_mean[low_pt_idx_mean] = -100
+    pt_pred_mean[low_pt_idx_mean] = -1
 
     low_pt_idx_abs = np.where(max_score_abs <= 0.)[0]
     pt_score_abs[low_pt_idx_abs] = 0.
-    pt_pred_abs[low_pt_idx_abs] = -100
+    pt_pred_abs[low_pt_idx_abs] = -1
 
     return pt_score_abs, pt_pred_abs, pt_score_mean
 
@@ -245,6 +245,35 @@ def prompt_consolidation(xyz, pt_score_abs, pt_pred_abs, pt_score_mean):
     return pt_pred_final
 
 
+def merge_floor(pred_ins, floor_propose_ids, floor_id, scene_inter_thres):
+    unique_pre_ins_ids = np.unique(pred_ins)
+    for i in range(len(unique_pre_ins_ids)):
+        if unique_pre_ins_ids[i] == -1:
+            pre_instance_points_idx = np.where(pred_ins == unique_pre_ins_ids[i])[0]
+            insection = np.isin(pre_instance_points_idx, floor_propose_ids) # the intersection between the floor and the predicted instance
+            if sum(insection) > 0: 
+                pred_ins[pre_instance_points_idx[insection]] = floor_id
+            continue
+        
+        pre_instance_points_idx = np.where(pred_ins == unique_pre_ins_ids[i])[0]
+        insection = sum(np.isin(pre_instance_points_idx, floor_propose_ids))  # the intersection between the floor and the predicted instance
+     
+        ratio = insection / len(pre_instance_points_idx)
+        if ratio > scene_inter_thres:
+            pred_ins[pre_instance_points_idx] = floor_id
+            print(unique_pre_ins_ids[i])
+
+    return pred_ins
+
+
+def ransac_plane_seg(scene_plypath, pred_ins, floor_id, scene_dist_thres):
+    point_cloud = o3d.io.read_point_cloud(scene_plypath)
+    plane, inliers = point_cloud.segment_plane(distance_threshold=scene_dist_thres, ransac_n=3, num_iterations=1000)
+    pred_ins[inliers] = floor_id
+
+    return pred_ins
+
+
 def get_args():
     '''Command line arguments.'''
 
@@ -254,6 +283,7 @@ def get_args():
     parser.add_argument('--scene_name', default="scene0030_00", type=str, help='The scene names in ScanNet.')
     parser.add_argument('--prompt_path', default="init_prompt", type=str, help='Path to the pre-sampled 3D initial prompts.')
     parser.add_argument('--sam_output_path', default="sam_output", type=str, help='Path to the previously generated sam segmentation result.')
+    parser.add_argument('--pred_path', default="final_pred", type=str, help='Path to save the predicted per-point segmentation.')
     parser.add_argument('--output_vis_path', default="output_vis", type=str, help='Path to save the visualization file of the final segmentation result.')
     # sam arguments:
     parser.add_argument('--model_type', default="vit_h", type=str, help="The type of model to load, in ['default', 'vit_h', 'vit_l', 'vit_b']")
@@ -264,6 +294,11 @@ def get_args():
     parser.add_argument('--stability_score_thres', type=float, default=0.6, help='Exclude masks with a stability score lower than this threshold.')
     parser.add_argument('--box_nms_thres', type=float, default=0.8, help='The overlap threshold for excluding a duplicate mask.')
     parser.add_argument('--keep_thres', type=float, default=0.4, help='The keeping threshold for keeping a prompt.')
+    # arguments for post-processing floor:
+    parser.add_argument('--post_floor', type=bool, default=True, help='Whether post-processing the floor')
+    parser.add_argument('--scene_ht_thres', type=float, default=0.08, help='Height threshold of the floor area proposal')
+    parser.add_argument('--scene_inter_thres', type=float, default=0.4, help='Intersection threshold')
+    parser.add_argument('--scene_dist_thres', type=float, default=0.01, help='Distance_threshold, like a "thickness" of the floor')   
     args = parser.parse_args()
     return args
 
@@ -315,24 +350,45 @@ if __name__ == "__main__":
 
     # Prompt Consolidation:
     print("Start Prompt Consolidation and finalizing 3D Segmentation ...")
-    pt_pred_final = prompt_consolidation(xyz, pt_score_abs, pt_pred_abs, pt_score_mean)
-    print("Finished the entire pipeline!")
+    pt_pred = prompt_consolidation(xyz, pt_score_abs, pt_pred_abs, pt_score_mean)
+    print("Finished running the whole SAMPro3D!")
     print("********************************************************")
 
+    pt_pred = num_to_natural(pt_pred)
+    pred_file = os.path.join(args.pred_path, args.scene_name + '_seg.npy')
+    np.save(pred_file, pt_pred)
+
+    # Post process for perfect floor segmentation:
+    if args.post_floor:
+        print("Start post-processing the floor ...")
+        # Generate floor instance proposal (min height of the current scene + scene_height_threshold)
+        floor_proposal_masks = xyz[:, 2] < min(xyz[:, 2]) + args.scene_ht_thres  # define an initial area of the floor according to the height
+        xyz_id = np.arange(len(xyz))
+        floor_proposal_ids = xyz_id[floor_proposal_masks]
+        floor_id = int(pt_pred.max()) + 1
+        # Merge instances that have large overlap with the floor_proposal
+        pt_pred = merge_floor(pt_pred, floor_proposal_ids, floor_id, args.scene_inter_thres)
+        # Run RANSAC to finally refine the previous plane segmentation if there are still some actual floor areas does not segmented as floor
+        pt_pred = ransac_plane_seg(scene_plypath, pt_pred, floor_id, args.scene_dist_thres)
+        print("Finished post-processing the floor!")
+        print("********************************************************")
+
+    # save the prediction result:
+    create_folder(args.pred_path)
+    pred_file = os.path.join(args.pred_path, args.scene_name + '_seg_floor.npy')
+    np.save(pred_file, pt_pred)
+    
     print("Creating the visualization result ...")
-    # Save and visualize the final result, delete unused imported packages at the begining
-    # Create the output folder if it doesn't exist
     create_folder(args.output_vis_path)
-
     mesh_ori = o3d.io.read_triangle_mesh(scene_plypath)
-    cmap = rand_cmap(keep_idx.shape[0], type='bright', first_color_black=False, last_color_black=False, verbose=False)
-    c_all = get_color_rgb(xyz, pt_pred_final, rgb, cmap)
+    pred_ins_num = int(pt_pred.max())+1
+    cmap = rand_cmap(pred_ins_num, type='bright', first_color_black=False, last_color_black=False, verbose=False)
+    c_all = get_color_rgb(xyz, pt_pred, rgb, cmap)
     c = np.concatenate(c_all)
-
     mesh = o3d.geometry.TriangleMesh()
     mesh.vertices = mesh_ori.vertices
     mesh.triangles = mesh_ori.triangles
     mesh.vertex_colors = o3d.utility.Vector3dVector(c)
-    output_vis_file = os.path.join(args.output_vis_path, args.scene_name + '.ply')
+    output_vis_file = os.path.join(args.output_vis_path, args.scene_name + '_seg.ply')
     o3d.io.write_triangle_mesh(output_vis_file, mesh)
     print("Successfully save the visualization result of final segmentation!")

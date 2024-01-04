@@ -3,6 +3,7 @@ import torch
 import os
 import plyfile
 import cv2
+import copy
 
 """
 main functions
@@ -140,7 +141,7 @@ def isolate_on_pred(xyz, pt_pred, pt_score):
 
     ins_preds = np.unique(pt_pred)
     for ins_id in ins_preds:
-        if ins_id == -100:
+        if ins_id == -1:
             continue
         pt_id_ins = np.where(pt_pred == int(ins_id))[0]
         if pt_id_ins.shape[0] <= 0:
@@ -224,6 +225,20 @@ def merge_common_values(list_of_common_values):
                 merged_list[common_key].append(value)
 
     return merged_list
+
+
+def num_to_natural(group_ids):
+    '''
+    Change the group number to natural number arrangement
+    '''
+    if np.all(group_ids == -1):
+        return group_ids
+    array = copy.deepcopy(group_ids)
+    unique_values = np.unique(array[array != -1])
+    mapping = np.full(np.max(unique_values) + 2, -1)
+    mapping[unique_values + 1] = np.arange(len(unique_values))
+    array = mapping[array + 1]
+    return array
 
 
 def fnv_hash_vec(arr):

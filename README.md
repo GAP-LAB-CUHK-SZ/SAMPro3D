@@ -35,7 +35,7 @@
   </a>
 </p>
 
-*SAMPro3D* can segment **ANY** 😯😯😯 3D indoor scenes <b>WITHOUT</b> training. ❗️❗️❗️ It achieves higher quality and more diverse segmentation than previous zero-shot or fully supervised approaches, and in many cases even surpasses human-level annotations.
+*SAMPro3D* can segment **ANY** 😯😯😯 3D indoor scenes <b>WITHOUT</b> training ❗️❗️❗️. It achieves higher quality and more diverse segmentation than previous zero-shot or fully supervised approaches, and in many cases even surpasses human-level annotations.
 <br>
 
 If you find our code or work helpful, please cite:
@@ -84,7 +84,7 @@ If you find our code or work helpful, please cite:
 
 ## 📢 News
 - The initial code is released. :fire::fire::fire: (Dec.31, 2023 UTC)
-- The first major revision of code is out, please use the latest code. 💪💪💪 (Jan.2, 2024 UTC)
+- The first major revision of code is out. Try the latest code! 💪💪💪 (Jan.2, 2024 UTC)
 
 
 ## Requirements and Installation
@@ -115,12 +115,11 @@ This stage will be the only step to perform SAM inference, accounting for the ma
 ### Finish Segmentation and Result Visualization
 Next, we will proceed with filtering and consolidating the initial prompts, leveraging the saved SAM outputs generated during the 3D Prompt Proposal phase, to obtain the final 3D segmentations. This can be realized by executing the following command:
 ```
-python main.py --data_path /PATH_TO/ScanNet_data --scene_name sceneXXXX_XX --prompt_path /PATH_TO/initial_prompt --sam_output_path /PATH_TO/SAM_outputs --output_vis_path /PATH_TO/result_visualization --device cuda:0
+python main.py --data_path /PATH_TO/ScanNet_data --scene_name sceneXXXX_XX --prompt_path /PATH_TO/initial_prompt --sam_output_path /PATH_TO/SAM_outputs --pred_path /PATH_TO/sampro3d_predictions --output_vis_path /PATH_TO/result_visualization --device cuda:0
 ```
 After finishing this, the visualization result of the final 3D segmentation will be *automatically* 😊 saved as `.ply` file in the path specified by `--output_vis_path`.
 
-<!-- ### Post-processing to segment the floor perfectly.
- Using our framework, you can usually get a decent segmentation of the floor. However, for a large-scale floor, you need to run post_process.py for perfect segmentation of floors. -->
+**Note**: Using our framework, you can usually get a decent segmentation of the floor. However, for a large-scale floor, we use the post-processing for for perfect segmentation of the floor. For small-scale scene (e.g., scene0050_00 in ScanNet), you can skip this step by simply adding `--args.post_floor False` to the previous command.
 
 ### Time estimation ⚡️
 If everything goes well, the entire pipeline will just take 15 min for a large-scale 3D scene captured by 2000 2D frames. (**WE DO NOT NEED TRAIN❗️**)
@@ -131,7 +130,7 @@ https://github.com/GAP-LAB-CUHK-SZ/SAMPro3D/assets/48080726/3a459c80-ac17-4750-a
 
 https://github.com/GAP-LAB-CUHK-SZ/SAMPro3D/assets/48080726/ac7aaf2c-9223-4d0e-94c4-cf38413eba74
 
-## 🌟 Segment Your Own 3D Scene: 
+## 🌟 Segment Your Own 3D Scene 
 With our advanced framework, you can generate high-quality segmentations on your own 3D scene without the need for training! Here are the steps you can follow:
 
 - Data preparation: Follow the tips mentioned in [data pre-processing instruction](dataset_preprocess/README.md) to prepare your data.
@@ -144,8 +143,9 @@ With our advanced framework, you can generate high-quality segmentations on your
 
 ## 🚩 TODO
 - [ ]  Add the visualization code for showing the result of SAM3D, Mask3D and ScanNet200's annotations.
-- [ ]  Support the jupyter notebook for step-by-step running.
+- [ ]  Add the evaluation code for calculating segmentation mIoU.
 - [ ]  Add the code for incorporating [HQ-SAM](https://github.com/SysCV/sam-hq) and [Mobile-SAM](https://github.com/ChaoningZhang/MobileSAM) in our pipeline.
+- [ ]  Support the jupyter notebook for step-by-step running.
 - [ ]  Support in-website qualitative visualization.
 - [ ]  Support more datasets.
 
