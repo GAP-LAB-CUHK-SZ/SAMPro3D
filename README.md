@@ -117,7 +117,7 @@ Next, we will proceed with filtering and consolidating the initial prompts, leve
 ```
 python main.py --data_path /PATH_TO/ScanNet_data --scene_name sceneXXXX_XX --prompt_path /PATH_TO/initial_prompt --sam_output_path /PATH_TO/SAM_outputs --pred_path /PATH_TO/sampro3d_predictions --output_vis_path /PATH_TO/result_visualization --device cuda:0
 ```
-After finishing this, the visualization result of the final 3D segmentation will be *automatically* 😊 saved as `.ply` file in the path specified by `--output_vis_path`.
+After finishing this, the visualization result of the final 3D segmentation will be *automatically* 😊 saved as `sceneXXXX_XX.ply` file in the path specified by `--output_vis_path`.
 
 **Note** on post-processing of the floor: Using our framework, you can usually get a decent segmentation of the floor. However, for a large-scale floor, we use post-processing for perfect segmentation of the floor. For small-scale scenes (e.g., scene0050_00 in ScanNet), you can skip this step by simply adding `--args.post_floor False` to the previous command.
 
