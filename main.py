@@ -94,7 +94,7 @@ def prompt_filter(init_prompt, scene_output_path, npy_path, predictor, args):
         keep_score[keep_ins_idx] += 1
         del_score[del_ins_idx] += 1 
 
-    # make all frames happy:
+    # make all selected frames happy:
     counter[torch.where(counter >= stop_limit)] = stop_limit
     counter[torch.where(counter == 0)] = -1  #  avoid that the the score is divided by counter of 0
     # keep prompts whose score is larger than a threshold:
@@ -355,6 +355,8 @@ if __name__ == "__main__":
     print("********************************************************")
 
     pt_pred = num_to_natural(pt_pred)
+    create_folder(args.pred_path)
+    # save the prediction result:
     pred_file = os.path.join(args.pred_path, args.scene_name + '_seg.npy')
     np.save(pred_file, pt_pred)
 
@@ -372,11 +374,9 @@ if __name__ == "__main__":
         pt_pred = ransac_plane_seg(scene_plypath, pt_pred, floor_id, args.scene_dist_thres)
         print("Finished post-processing the floor!")
         print("********************************************************")
-
-    # save the prediction result:
-    create_folder(args.pred_path)
-    pred_file = os.path.join(args.pred_path, args.scene_name + '_seg_floor.npy')
-    np.save(pred_file, pt_pred)
+        # save the prediction result:
+        pred_file = os.path.join(args.pred_path, args.scene_name + '_seg_floor.npy')
+        np.save(pred_file, pt_pred)
     
     print("Creating the visualization result ...")
     create_folder(args.output_vis_path)
