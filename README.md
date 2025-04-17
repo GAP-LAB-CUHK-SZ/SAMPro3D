@@ -4,7 +4,7 @@
   <img src="https://mutianxu.github.io/sampro3d/static/images/icon_final.jpg" alt="" width="150" height="50"/>
   <h1 align="center">SAMPro3D: Locating SAM Prompts in 3D 
   
-  for Zero-Shot Scene Segmentation</h1>
+  for Zero-Shot Instance Segmentation</h1>
   <p align="center">
     <a href="https://mutianxu.github.io"><strong>Mutian Xu</strong></a>
     ·
