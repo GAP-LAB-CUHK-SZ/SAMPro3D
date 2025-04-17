@@ -25,7 +25,7 @@
     Microsoft Research Asia
 
   </p>
-  <!-- <h2 align="center">CVPR 2023</h2> -->
+  <h2 align="center">3DV 2025</h2>
   <h3 align="center"><a href="https://arxiv.org/abs/2311.17707">Paper</a> | <a href="https://mutianxu.github.io/sampro3d/">Project Page</a></h3>
   <div align="center"></div>
 </p>
@@ -40,11 +40,11 @@
 
 If you find our code or work helpful, please cite:
 ```bibtex
-@article{xu2023sampro3d,
-        title={SAMPro3D: Locating SAM Prompts in 3D for Zero-Shot Scene Segmentation}, 
+@inproceedings{xu2025sampro3d,
+        title={SAMPro3D: Locating SAM Prompts in 3D for Zero-Shot Instance Segmentation}, 
         author={Mutian Xu and Xingyilang Yin and Lingteng Qiu and Yang Liu and Xin Tong and Xiaoguang Han},
-        year={2023},
-        journal = {arXiv preprint arXiv:2311.17707}
+        year={2025},
+        booktitle = {International Conference on 3D Vision (3DV)}
   }
 ```
 
@@ -83,8 +83,9 @@ If you find our code or work helpful, please cite:
 </details>
 
 ## 📢 News
-- The initial code is released. :fire::fire::fire: (Dec.31, 2023 UTC)
+- The ScanNet200-Fine50 test data is released. (Mar.11, 2025 UTC)
 - The first major revision of code is out. Try the latest code! 💪💪💪 (Jan.2, 2024 UTC)
+- The initial code is released. :fire::fire::fire: (Dec.31, 2023 UTC)
 
 
 ## Requirements and Installation
@@ -141,13 +142,16 @@ With our advanced framework, you can generate high-quality segmentations on your
 - Refine if necessary: If the segmentation output requires improvement or refinement, consider adjusting the parameters or settings of SAMPro3D or applying post-processing techniques to enhance the segmentation quality.
 - Analyze and utilize the segmentation: Utilize the segmented output for your intended purposes, such as further analysis, visualization, or integration with other applications or systems.
 
-## 🚩 TODO
+## ScanNet200-Fine50 Test Data
+In our paper, we contribute a ScanNet200-Fine50 test data, providing fine-grained high-quality annotations on 50 scenes from ScanNet200. The instance label files (organized in .npy, point index keeps same with original ScanNet200 data) can be accessed via: [Google Drive Link](https://drive.google.com/file/d/1jJmSmonPjZlXAWMcoYd-viALJmR4ePcF/view?usp=sharing) and [BaiduYun](https://pan.baidu.com/s/1gmOwBYLhODd-1-gbnWJSRw?pwd=ftgd).
+
+<!-- ## 🚩 TODO
 - [ ]  Add the visualization code for showing the result of SAM3D, Mask3D and ScanNet200's annotations.
-- [ ]  Add the evaluation code for calculating segmentation mIoU.
+- [ ]  Add the evaluation code for calculating segmentation mAP.
 - [ ]  Add the code for incorporating [HQ-SAM](https://github.com/SysCV/sam-hq) and [Mobile-SAM](https://github.com/ChaoningZhang/MobileSAM) in our pipeline.
 - [ ]  Support the jupyter notebook for step-by-step running.
 - [ ]  Support in-website qualitative visualization.
-- [ ]  Support more datasets.
+- [ ]  Support more datasets. -->
 
 ## Contact
 You are welcome to submit issues, send pull requests, or share some ideas with us. If you have any other questions, please contact Mutian Xu (mutianxu@link.cuhk.edu.cn).
